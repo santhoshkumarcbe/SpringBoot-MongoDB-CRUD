@@ -1,9 +1,0 @@
-
-
-public class Supplier{
-	private String SupplierId;
-	private String Name;
-	private String Location;
-	private String MaterialType;
-	private int tier;
-}
