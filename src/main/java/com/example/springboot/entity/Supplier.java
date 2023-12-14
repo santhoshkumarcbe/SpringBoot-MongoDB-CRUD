@@ -21,7 +21,7 @@ public class Supplier{
 	private int supplierId;
 	private String supplierName;
 	private ArrayList<String> location;
-	private String materialType;
-	private int tier;
+	private ArrayList<String> materialType;
+	private ArrayList<Integer> tier;
 
 }

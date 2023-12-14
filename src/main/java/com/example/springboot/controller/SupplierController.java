@@ -6,6 +6,8 @@ import com.example.springboot.errorHandling.supplierNotFoundError;
 import com.example.springboot.repository.SupplierRepository;
 import com.example.springboot.service.SupplierService;
 import java.util.List;
+
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,7 +30,7 @@ public class SupplierController {
     @PostMapping("/suppliers")
     public String saveSupplier(@RequestBody Supplier supplier) throws supplierNotFoundError {
          if(supplierService.saveSupplier(supplier)){
-            return "Supplier saved successfully";
+            return "Supplier saved successfully" ;
          }
          return "Supplier already exist";
         
@@ -50,8 +52,8 @@ public class SupplierController {
     }
 
     @DeleteMapping("/suppliers/{supplierId}")
-    public String deleteSupplierById(@PathVariable("supplierId") Integer supplierId){
-        supplierService.deleteSupplierById(supplierId);
+    public String deleteSupplierById(@PathVariable("supplierId") ObjectId objectId){
+        supplierService.deleteSupplierById(objectId);
         return "Supplier deleted successfully !!!";
     }
 

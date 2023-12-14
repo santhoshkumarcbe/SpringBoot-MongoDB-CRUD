@@ -2,6 +2,8 @@ package com.example.springboot.service;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
+
 import com.example.springboot.entity.Supplier;
 import com.example.springboot.errorHandling.supplierNotFoundError;
 
@@ -13,7 +15,7 @@ public interface SupplierService {
 
     public Supplier getSupplierById(Integer supplierId) throws supplierNotFoundError;
 
-    public void deleteSupplierById(Integer supplierId);
+    public void deleteSupplierById(ObjectId objectId);
 
     public Supplier updatSupplier(Integer supplierid, Supplier supplier);
 
