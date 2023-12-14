@@ -22,31 +22,31 @@ public class SupplierServiceImpl implements SupplierService{
     dao daoInterface;
     @Override
     public boolean saveSupplier(Supplier supplier) throws supplierNotFoundError {
-        ObjectId sId=supplier.getId();
-        Supplier ExsitingSupplier=(Supplier) supplierRepository.findById(sId);
+        int sId=supplier.getSupplierId();
+        Supplier ExsitingSupplier=supplierRepository.findBySupplierId(sId);
 
         boolean isSId=false;
-        if(supplierRepository.existsBySupplierId(supplier.getSupplierId())==supplierRepository.existsBySupplierId(ExsitingSupplier.getSupplierId())){
+        if(supplier.getSupplierId()==ExsitingSupplier.getSupplierId()){
             isSId=true;
         }
 
         boolean sname=false;
-        if(supplierRepository.existsBySupplierName(supplier.getSupplierName())==supplierRepository.existsBySupplierName(ExsitingSupplier.getSupplierName())){
+        if(supplier.getSupplierName()==ExsitingSupplier.getSupplierName()){
             sname=true;
         }
 
         boolean slocation=false;
-        if(supplierRepository.existsByLocation(supplier.getLocation())==supplierRepository.existsByLocation(ExsitingSupplier.getLocation())){
+        if(supplier.getLocation()==ExsitingSupplier.getLocation()){
             slocation=true;
         }
 
         boolean smaterialType=false;
-        if(supplierRepository.existsByMaterialType(supplier.getMaterialType())==supplierRepository.existsByMaterialType(ExsitingSupplier.getMaterialType())){
+        if(supplier.getMaterialType()==ExsitingSupplier.getMaterialType()){
             smaterialType=true;
         }
 
         boolean stier=false;
-        if(supplierRepository.existsByTier(supplier.getTier())==supplierRepository.existsByTier(ExsitingSupplier.getTier())){
+        if(supplier.getTier()==ExsitingSupplier.getTier()){
             stier=true;
         }
         
@@ -82,7 +82,6 @@ public class SupplierServiceImpl implements SupplierService{
                 }
             }
             else{
-                
                 newLocation.addAll(supplier.getLocation());
                 supplier.setLocation(newLocation);
 
