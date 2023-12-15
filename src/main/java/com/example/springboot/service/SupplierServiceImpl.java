@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.aggregation.ArithmeticOperators.Log;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Sort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import com.example.springboot.dao.dao;
 import com.example.springboot.entity.Supplier;
@@ -23,54 +25,41 @@ public class SupplierServiceImpl implements SupplierService{
         
         int sId=supplier.getSupplierId();
         Supplier ExsitingSupplier=supplierRepository.findBySupplierId(sId);
-        boolean isESnull=false;
+
+        boolean isExsitingSupplierNull=false;
         if (ExsitingSupplier==null) {
-            isESnull=true;
+            isExsitingSupplierNull=true;
         }
-        if (isESnull) {
-            supplierRepository.save(supplier);
-            return true;
-        }
-        else{
+
         
-        boolean isSId=supplierRepository.existsBySupplierId(supplier.getSupplierId());
+        boolean isSupplierId=supplierRepository.existsBySupplierId(supplier.getSupplierId());
         boolean sname=supplierRepository.existsBySupplierName(supplier.getSupplierName());
-        // boolean slocation=supplierRepository.existsByLocation(supplier.getLocation());
 
         boolean slocation=false;
         
-        if (ExsitingSupplier.getLocation().containsAll(supplier.getLocation())) {
+        if (!isExsitingSupplierNull && ExsitingSupplier.getLocation()!=null && ExsitingSupplier.getLocation().containsAll(supplier.getLocation())) {
             slocation=true;
         }
     
 
         boolean smaterialType=false;
-        if(ExsitingSupplier.getMaterialType().containsAll(supplier.getMaterialType())){
+        if(!isExsitingSupplierNull && ExsitingSupplier.getMaterialType()!=null && ExsitingSupplier.getMaterialType().containsAll(supplier.getMaterialType())){
             smaterialType=true;
-            
         }
-        ArrayList<Integer> newTier = ExsitingSupplier.getTier();
-        ArrayList<String> newMaterialType = ExsitingSupplier.getMaterialType();
-        ArrayList<String> newLocation = ExsitingSupplier.getLocation();
 
-        if ( isSId && sname) {
-             if (slocation && sname) {
+        
+
+        if ( isSupplierId) {
+            if (sname) {
+             if (slocation) {
                 if (smaterialType) {
-                    // if (stier) {
-                    //     return false;
-                    // }
-                //     else{
-                //         newTier.addAll(supplier.getTier());
-                //         supplier.setTier(newTier);
-                //         supplier.setId(ExsitingSupplier.getId());
-                //         supplierRepository.save(supplier);
-                //         return true;
-                //     }
-                // }
-                return false;
+                    return false;
                 }
                 else{
-                    
+                    ArrayList<Integer> newTier = ExsitingSupplier.getTier();
+                    ArrayList<String> newMaterialType = ExsitingSupplier.getMaterialType();
+                    ArrayList<String> newLocation = ExsitingSupplier.getLocation();
+
                     newLocation.addAll(supplier.getLocation());
                     supplier.setLocation(newLocation);
         
@@ -87,7 +76,10 @@ public class SupplierServiceImpl implements SupplierService{
                 
             }
             else{
-                
+                ArrayList<Integer> newTier = ExsitingSupplier.getTier();
+                ArrayList<String> newMaterialType = ExsitingSupplier.getMaterialType();
+                ArrayList<String> newLocation = ExsitingSupplier.getLocation();
+
                 newLocation.addAll(supplier.getLocation());
                 supplier.setLocation(newLocation);
 
@@ -102,11 +94,17 @@ public class SupplierServiceImpl implements SupplierService{
                 return true;
             }
         }
+    
         else{
             return false;
         }
+       
         }
-    }
+         else{
+            return false;
+        }
+    
+}
     
     @Override
     public List<Supplier> getSuppliers() {
@@ -136,10 +134,22 @@ public class SupplierServiceImpl implements SupplierService{
     
     @Override
     public void updateSupplierName(String oldName, String newName) {
-        // TODO Auto-generated method stub
         daoInterface.updateSupplierName(oldName, newName);
         
     }
+
+    // @Override
+    // public Object getById(String anyString) {
+    //     // TODO Auto-generated method stub
+    //     throw new UnsupportedOperationException("Unimplemented method 'getById'");
+    // }
+
+    // @Override
+    // public Page<Supplier> getAllSuppliers(int page, int size, String sortBy) {
+    //     PageRequest pageable = PageRequest.of(page, size, Sort.by(sortBy));
+    //     return supplierRepository.findAll(pageable);
+    // }
+    
     }
 
     

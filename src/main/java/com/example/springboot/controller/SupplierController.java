@@ -9,6 +9,11 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,11 +33,11 @@ public class SupplierController {
     @Autowired
     private SupplierRepository supplierRepository;
     @PostMapping("/suppliers")
-    public String saveSupplier(@RequestBody Supplier supplier) throws supplierNotFoundError {
+    public ResponseEntity<Supplier> saveSupplier(@RequestBody Supplier supplier) throws supplierNotFoundError {
          if(supplierService.saveSupplier(supplier)){
-            return "Supplier saved successfully";
+            return new ResponseEntity<Supplier>(supplier,HttpStatus.OK);
          }
-         return "Supplier already exist";
+         return new ResponseEntity<Supplier>(HttpStatus.NOT_FOUND);
         
     }
 
@@ -41,10 +46,16 @@ public class SupplierController {
         return supplierService.getSuppliers();
     }
 
-    // @GetMapping("/suppliers/{supplierId}")
-    // public Supplier getSupplierById(@PathVariable("supplierId") int supplierId) throws supplierNotFoundError {
-    //         return supplierService.getSupplierById(supplierId); 
+    // @GetMapping("/suppliers/sort/")
+    // public List<Supplier> getSortSuppliers(
+    //     @RequestParam(defaultValue = "0") int page,
+    //         @RequestParam(defaultValue = "10") int size,
+    //         @RequestParam(defaultValue = "id") String sortBy
+    // ) {
+    //     PageRequest pageable=PageRequest.of(page, size,Sort.by(sortBy));
+    //     return supplierService.findAll(pageable);
     // }
+
 
     @GetMapping("/suppliers/{supplierId}")
     public Supplier getSupplierById(@PathVariable("supplierId") int supplierId) throws supplierNotFoundError {
