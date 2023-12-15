@@ -30,7 +30,7 @@ public class SupplierController {
     @PostMapping("/suppliers")
     public String saveSupplier(@RequestBody Supplier supplier) throws supplierNotFoundError {
          if(supplierService.saveSupplier(supplier)){
-            return "Supplier saved successfully" ;
+            return "Supplier saved successfully";
          }
          return "Supplier already exist";
         
