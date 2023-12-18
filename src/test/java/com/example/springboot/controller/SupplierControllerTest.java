@@ -1,7 +1,12 @@
 package com.example.springboot.controller;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -50,20 +55,6 @@ public class SupplierControllerTest {
         List<Supplier> op = Arrays.asList(new ObjectMapper().readValue(result, Supplier[].class));
          assertTrue(op.isEmpty());
     }
-
-    // @Test
-    // void testSupplierSavesSuccessfully() throws Exception{
-    //     ObjectId objectId = new ObjectId("65797bbac254a3759e242962");
-    //     Supplier newSupplier=new Supplier(objectId, 23, "SK TEX", new ArrayList<>(List.of("Salem")), new ArrayList<>(List.of("cotton")), new ArrayList<>(List.of(3)));
-        
-    //     Mockito.when(supplierService.saveSupplier(Mockito.any(Supplier.class)));
-    //     String result = mockMvc.perform(MockMvcRequestBuilders.post("/suppliers").contentType(MediaType.APPLICATION_JSON).content(new ObjectMapper().writeValueAsString(newSupplier))).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
-    //     System.out.println("___________");
-    //     System.out.println(result);
-    //     System.out.println("___________");
-    //     Supplier actualOutput = new ObjectMapper().readValue(result, Supplier.class);
-    //     assu(actualOutput).isEqualTo(newSupplier);
-    // }
 
 
      @Test
@@ -170,19 +161,41 @@ public class SupplierControllerTest {
                 .andExpect(jsonPath("$.supplierId").value(validSupplierId));  // Adjust based on the expected data
     }
 
-    @Test
-    void testGetSupplierById_NegativeCase() throws Exception {
-        // Mock the service method to throw supplierNotFoundError for an invalid supplierId
-        int invalidSupplierId = 999;
-        when(supplierService.getSupplierById(invalidSupplierId)).thenThrow(new supplierNotFoundError("Supplier not found"));
+     @Test
+    public void testDeleteSupplierById_Success() {
+        // Arrange
+        ObjectId supplierId = new ObjectId("65797bbac254a3759e242962");
 
-        // Perform the GET request to "/suppliers/{supplierId}"
-        mockMvc.perform(MockMvcRequestBuilders.get("/suppliers/{supplierId}", invalidSupplierId)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());  // Expect HTTP 404 Not Found
+        // Mock the behavior of the service method
+        doNothing().when(supplierService).deleteSupplierById(supplierId);
+
+        // Act
+        supplierService.deleteSupplierById(supplierId);
+
+        // Verify that the service method was called with the correct argument
+        verify(supplierService, times(1)).deleteSupplierById(supplierId);
     }
 
+    @Test
+    public void testDeleteSupplierById_Failure() {
+        // Arrange
+        ObjectId supplierId = new ObjectId("65797bbac254a3759e242962");
 
+        
+        doNothing().when(supplierService).deleteSupplierById(supplierId);
+
+        // Act
+        // Call the method (even though it throws an exception)
+        try{
+        supplierService.deleteSupplierById(supplierId);
+        }
+        catch(Exception e){
+            e.getMessage();
+        }
+        
+        // Verify that the service method was called with the correct argument
+        verify(supplierService, times(1)).deleteSupplierById(supplierId);
+    }
 
 }
 

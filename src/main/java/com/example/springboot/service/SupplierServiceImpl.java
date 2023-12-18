@@ -30,8 +30,9 @@ public class SupplierServiceImpl implements SupplierService{
 
         
         boolean isSupplierId=supplierRepository.existsBySupplierId(supplier.getSupplierId());
+        System.out.println("Supplierid "+ (isSupplierId?"present":"absent"));
         boolean sname=supplierRepository.existsBySupplierName(supplier.getSupplierName());
-
+        System.out.println("SuplierName "+ (sname?"present":"absent"));
         boolean slocation=false;
         
         if (!isExsitingSupplierNull && ExsitingSupplier.getLocation()!=null && ExsitingSupplier.getLocation().containsAll(supplier.getLocation())) {
@@ -43,10 +44,12 @@ public class SupplierServiceImpl implements SupplierService{
         if(!isExsitingSupplierNull && ExsitingSupplier.getMaterialType()!=null && ExsitingSupplier.getMaterialType().containsAll(supplier.getMaterialType())){
             smaterialType=true;
         }
-
-        
-
-        if ( isSupplierId) {
+        if (!isSupplierId && !sname) {
+            supplierRepository.save(supplier);
+            return true;
+        }
+        else{
+        if ( isSupplierId && sname) {
             if (sname) {
              if (slocation) {
                 if (smaterialType) {
@@ -93,13 +96,17 @@ public class SupplierServiceImpl implements SupplierService{
         }
     
         else{
+            System.out.println("Supplier name already exists");
             return false;
         }
        
         }
          else{
+            
+            System.out.println("Supplier id or Supplier Name already exists");
             return false;
         }
+    }
     
 }
     
@@ -134,12 +141,6 @@ public class SupplierServiceImpl implements SupplierService{
         daoInterface.updateSupplierName(oldName, newName);
         
     }
-
-    // @Override
-    // public Object getById(String anyString) {
-    //     // TODO Auto-generated method stub
-    //     throw new UnsupportedOperationException("Unimplemented method 'getById'");
-    // }
 
     // @Override
     // public Page<Supplier> getAllSuppliers(int page, int size, String sortBy) {

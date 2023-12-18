@@ -32,7 +32,7 @@ public class SupplierController {
     private SupplierService supplierService;
 
     @PostMapping("/suppliers")
-    public ResponseEntity<Void> saveSupplier(@RequestBody Supplier supplier) {
+    public ResponseEntity<Supplier> saveSupplier(@RequestBody Supplier supplier) {
         try {
             if (supplierService.saveSupplier(supplier)) {
                 return new ResponseEntity<>(HttpStatus.CREATED);
@@ -44,6 +44,21 @@ public class SupplierController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+    
+
+    // @PostMapping("/suppliers")
+    // public ResponseEntity<Supplier> saveSupplier(@RequestBody Supplier supplier) throws supplierNotFoundError {
+    //     try{
+    //      if(supplierService.saveSupplier(supplier)){
+    //         return new ResponseEntity<Supplier>(supplier,HttpStatus.OK);
+    //      }
+    //      return new ResponseEntity<Supplier>(supplier,HttpStatus.BAD_REQUEST);
+    //     }
+
+    //     catch(Exception e){
+    //         return new ResponseEntity<Supplier>(supplier,HttpStatus.BAD_REQUEST);
+    //     }
+    // }
     
 
     @GetMapping("/suppliers")
