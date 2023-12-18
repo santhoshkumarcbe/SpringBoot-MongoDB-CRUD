@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.springframework.http.MediaType;
+
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -21,6 +23,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import com.example.springboot.entity.Supplier;
+import com.example.springboot.errorHandling.supplierNotFoundError;
 import com.example.springboot.repository.SupplierRepository;
 import com.example.springboot.service.SupplierService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -111,13 +114,72 @@ public class SupplierControllerTest {
                 .andExpect(status().isFound());  // Expect HTTP 302 Found for duplicate entry
     }
 
-     @Test
-    void WheathertestSupplierClassExists() {
-        try {
-            Class.forName("com.example.springboot.model.Supplier");
-        } catch (ClassNotFoundException e) {
-            fail("Supplier class does not exist");
-        }
+
+    @Test
+    void testGetSuppliers() throws Exception {
+        // Mock the service method to return a list of suppliers
+        ObjectId objectId = new ObjectId("65797bbac254a3759e242962");
+        List<Supplier> mockSuppliers = Arrays.asList(
+            
+            new Supplier(
+                objectId,
+                23, "SK TEX",
+                new ArrayList<>(Arrays.asList("Salem")), 
+                new ArrayList<>(Arrays.asList("cotton")), 
+                new ArrayList<>(Arrays.asList(3)))
+            ,
+            new Supplier(
+                objectId, 
+                24,
+                "KSK TEX", 
+                new ArrayList<>(Arrays.asList("COVAI")), 
+                new ArrayList<>(Arrays.asList("thread")), 
+                new ArrayList<>(Arrays.asList(2))
+                )
+                
+        );
+        when(supplierService.getSuppliers()).thenReturn(mockSuppliers);
+
+        // Perform the GET request to "/suppliers"
+        mockMvc.perform(MockMvcRequestBuilders.get("/suppliers")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())  // Expect HTTP 200 OK
+                .andExpect(jsonPath("$.length()").value(2))  // Adjust this based on the expected number of suppliers
+                .andExpect(jsonPath("$[0].supplierId").value(23))  // Adjust these based on the expected data
+                .andExpect(jsonPath("$[1].supplierId").value(24));
+    }
+
+
+    @Test
+    void testGetSupplierByIdFetched() throws Exception {
+        // Mock the service method to return a Supplier for a valid supplierId
+        int validSupplierId = 23;
+        ObjectId objectId = new ObjectId("65797bbac254a3759e242962");
+        Supplier mockSupplier = new Supplier(
+                objectId,
+                23, "SK TEX",
+                new ArrayList<>(Arrays.asList("Salem")), 
+                new ArrayList<>(Arrays.asList("cotton")), 
+                new ArrayList<>(Arrays.asList(3)));
+        when(supplierService.getSupplierById(validSupplierId)).thenReturn(mockSupplier);
+
+        // Perform the GET request to "/suppliers/{supplierId}"
+        mockMvc.perform(MockMvcRequestBuilders.get("/suppliers/{supplierId}", validSupplierId)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())  // Expect HTTP 200 OK
+                .andExpect(jsonPath("$.supplierId").value(validSupplierId));  // Adjust based on the expected data
+    }
+
+    @Test
+    void testGetSupplierById_NegativeCase() throws Exception {
+        // Mock the service method to throw supplierNotFoundError for an invalid supplierId
+        int invalidSupplierId = 999;
+        when(supplierService.getSupplierById(invalidSupplierId)).thenThrow(new supplierNotFoundError("Supplier not found"));
+
+        // Perform the GET request to "/suppliers/{supplierId}"
+        mockMvc.perform(MockMvcRequestBuilders.get("/suppliers/{supplierId}", invalidSupplierId)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());  // Expect HTTP 404 Not Found
     }
 
 
