@@ -21,55 +21,50 @@ public class SupplierServiceImpl implements SupplierService {
     public boolean saveSupplier(Supplier supplier) throws supplierNotFoundError {
         
         int sId=supplier.getSupplierId();
-        Supplier exsitingSupplier = supplierRepository.findBySupplierId(sId);
-        boolean isESnull=false;
-        if (exsitingSupplier==null) {
-            isESnull=true;
-        }
-        if (isESnull) {
-            supplierRepository.save(supplier);
-            return true;
-        }
-        else{
-        
-        boolean isSId=supplierRepository.existsBySupplierId(supplier.getSupplierId());
-        boolean sname=supplierRepository.existsBySupplierName(supplier.getSupplierName());
-        // boolean slocation=supplierRepository.existsByLocation(supplier.getLocation());
 
+        Supplier ExsitingSupplier=supplierRepository.findBySupplierId(sId);
+
+        boolean isExsitingSupplierNull=false;
+        if (ExsitingSupplier==null) {
+            isExsitingSupplierNull=true;
+
+        }
+
+        
+        boolean isSupplierId=supplierRepository.existsBySupplierId(supplier.getSupplierId());
+        System.out.println("Supplierid "+ (isSupplierId?"present":"absent"));
+        boolean sname=supplierRepository.existsBySupplierName(supplier.getSupplierName());
+        System.out.println("SuplierName "+ (sname?"present":"absent"));
         boolean slocation=false;
         
-        if (exsitingSupplier.getLocation().containsAll(supplier.getLocation())) {
-            slocation = true;
+        if (!isExsitingSupplierNull && ExsitingSupplier.getLocation()!=null && ExsitingSupplier.getLocation().containsAll(supplier.getLocation())) {
+            slocation=true;
+
         }
     
 
         boolean smaterialType=false;
-        if(exsitingSupplier.getMaterialType().containsAll(supplier.getMaterialType())){
+        if(!isExsitingSupplierNull && ExsitingSupplier.getMaterialType()!=null && ExsitingSupplier.getMaterialType().containsAll(supplier.getMaterialType())){
             smaterialType=true;
-            
         }
-        ArrayList<Integer> newTier = exsitingSupplier.getTier();
-        ArrayList<String> newMaterialType = exsitingSupplier.getMaterialType();
-        ArrayList<String> newLocation = exsitingSupplier.getLocation();
 
-        if ( isSId && sname) {
-             if (slocation && sname) {
+        if (!isSupplierId && !sname) {
+            supplierRepository.save(supplier);
+            return true;
+        }
+        else{
+        if ( isSupplierId && sname) {
+            if (sname) {
+             if (slocation) {
+
                 if (smaterialType) {
-                    // if (stier) {
-                    //     return false;
-                    // }
-                //     else{
-                //         newTier.addAll(supplier.getTier());
-                //         supplier.setTier(newTier);
-                //         supplier.setId(ExsitingSupplier.getId());
-                //         supplierRepository.save(supplier);
-                //         return true;
-                //     }
-                // }
-                return false;
+                    return false;
                 }
                 else{
-                    
+                    ArrayList<Integer> newTier = ExsitingSupplier.getTier();
+                    ArrayList<String> newMaterialType = ExsitingSupplier.getMaterialType();
+                    ArrayList<String> newLocation = ExsitingSupplier.getLocation();
+
                     newLocation.addAll(supplier.getLocation());
                     supplier.setLocation(newLocation);
         
@@ -86,7 +81,10 @@ public class SupplierServiceImpl implements SupplierService {
                 
             }
             else{
-                
+                ArrayList<Integer> newTier = ExsitingSupplier.getTier();
+                ArrayList<String> newMaterialType = ExsitingSupplier.getMaterialType();
+                ArrayList<String> newLocation = ExsitingSupplier.getLocation();
+
                 newLocation.addAll(supplier.getLocation());
                 supplier.setLocation(newLocation);
 
@@ -101,11 +99,21 @@ public class SupplierServiceImpl implements SupplierService {
                 return true;
             }
         }
+    
         else{
+            System.out.println("Supplier name already exists");
             return false;
         }
+       
+        }
+         else{
+            
+            System.out.println("Supplier id or Supplier Name already exists");
+            return false;
         }
     }
+    
+}
     
     @Override
     public List<Supplier> getSuppliers() {
@@ -135,10 +143,16 @@ public class SupplierServiceImpl implements SupplierService {
     
     @Override
     public void updateSupplierName(String oldName, String newName) {
-        // TODO Auto-generated method stub
         daoInterface.updateSupplierName(oldName, newName);
         
     }
+
+    // @Override
+    // public Page<Supplier> getAllSuppliers(int page, int size, String sortBy) {
+    //     PageRequest pageable = PageRequest.of(page, size, Sort.by(sortBy));
+    //     return supplierRepository.findAll(pageable);
+    // }
+    
     }
 
     

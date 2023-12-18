@@ -9,6 +9,11 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,36 +30,59 @@ public class SupplierController {
 
     @Autowired
     private SupplierService supplierService;
-    @Autowired
-    private SupplierRepository supplierRepository;
-    @PostMapping("/suppliers")
-    public String saveSupplier(@RequestBody Supplier supplier) throws supplierNotFoundError {
 
+    @PostMapping("/suppliers")
+
+    public ResponseEntity<Supplier> saveSupplier(@RequestBody Supplier supplier) {
         try {
-            if(supplierService.saveSupplier(supplier))
-                return "Supplier saved successfully";
+            if (supplierService.saveSupplier(supplier)) {
+                return new ResponseEntity<>(HttpStatus.CREATED);
+            }
+            return new ResponseEntity<>(HttpStatus.FOUND);
+        } catch (supplierNotFoundError e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        
-        catch (Exception e) {
-            return "Caught error : " + e.getMessage();
-        }
-        
-        return "Supplier already exists";
+
     }
+    
+
+    // @PostMapping("/suppliers")
+    // public ResponseEntity<Supplier> saveSupplier(@RequestBody Supplier supplier) throws supplierNotFoundError {
+    //     try{
+    //      if(supplierService.saveSupplier(supplier)){
+    //         return new ResponseEntity<Supplier>(supplier,HttpStatus.OK);
+    //      }
+    //      return new ResponseEntity<Supplier>(supplier,HttpStatus.BAD_REQUEST);
+    //     }
+
+    //     catch(Exception e){
+    //         return new ResponseEntity<Supplier>(supplier,HttpStatus.BAD_REQUEST);
+    //     }
+    // }
+    
 
     @GetMapping("/suppliers")
     public List<Supplier> getSuppliers() {
+
         return supplierService.getSuppliers();
     }
 
-    // @GetMapping("/suppliers/{supplierId}")
-    // public Supplier getSupplierById(@PathVariable("supplierId") int supplierId) throws supplierNotFoundError {
-    //         return supplierService.getSupplierById(supplierId); 
+    // @GetMapping("/suppliers/sort/")
+    // public List<Supplier> getSortSuppliers(
+    //     @RequestParam(defaultValue = "0") int page,
+    //         @RequestParam(defaultValue = "10") int size,
+    //         @RequestParam(defaultValue = "id") String sortBy
+    // ) {
+    //     PageRequest pageable=PageRequest.of(page, size,Sort.by(sortBy));
+    //     return supplierService.findAll(pageable);
     // }
+
 
     @GetMapping("/suppliers/{supplierId}")
     public Supplier getSupplierById(@PathVariable("supplierId") int supplierId) throws supplierNotFoundError {
-            return supplierRepository.findBySupplierId(supplierId); 
+            return supplierService.getSupplierById(supplierId); 
     }
 
     @DeleteMapping("/suppliers/{supplierId}")
@@ -73,6 +101,8 @@ public class SupplierController {
         //TODO: process PUT request
         supplierService.updateSupplierName(oldName,newName);
     }
+
+    
     
     
     
