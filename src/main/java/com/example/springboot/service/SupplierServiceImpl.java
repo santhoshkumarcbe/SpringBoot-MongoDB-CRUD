@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.aggregation.ArithmeticOperators.Log;
 import org.springframework.stereotype.Service;
 import com.example.springboot.dao.dao;
 import com.example.springboot.entity.Supplier;
@@ -12,7 +11,7 @@ import com.example.springboot.errorHandling.supplierNotFoundError;
 import com.example.springboot.repository.SupplierRepository;
 
 @Service
-public class SupplierServiceImpl implements SupplierService{
+public class SupplierServiceImpl implements SupplierService {
 
     @Autowired
     private SupplierRepository supplierRepository;
@@ -22,9 +21,9 @@ public class SupplierServiceImpl implements SupplierService{
     public boolean saveSupplier(Supplier supplier) throws supplierNotFoundError {
         
         int sId=supplier.getSupplierId();
-        Supplier ExsitingSupplier=supplierRepository.findBySupplierId(sId);
+        Supplier exsitingSupplier = supplierRepository.findBySupplierId(sId);
         boolean isESnull=false;
-        if (ExsitingSupplier==null) {
+        if (exsitingSupplier==null) {
             isESnull=true;
         }
         if (isESnull) {
@@ -39,19 +38,19 @@ public class SupplierServiceImpl implements SupplierService{
 
         boolean slocation=false;
         
-        if (ExsitingSupplier.getLocation().containsAll(supplier.getLocation())) {
-            slocation=true;
+        if (exsitingSupplier.getLocation().containsAll(supplier.getLocation())) {
+            slocation = true;
         }
     
 
         boolean smaterialType=false;
-        if(ExsitingSupplier.getMaterialType().containsAll(supplier.getMaterialType())){
+        if(exsitingSupplier.getMaterialType().containsAll(supplier.getMaterialType())){
             smaterialType=true;
             
         }
-        ArrayList<Integer> newTier = ExsitingSupplier.getTier();
-        ArrayList<String> newMaterialType = ExsitingSupplier.getMaterialType();
-        ArrayList<String> newLocation = ExsitingSupplier.getLocation();
+        ArrayList<Integer> newTier = exsitingSupplier.getTier();
+        ArrayList<String> newMaterialType = exsitingSupplier.getMaterialType();
+        ArrayList<String> newLocation = exsitingSupplier.getLocation();
 
         if ( isSId && sname) {
              if (slocation && sname) {
@@ -80,7 +79,7 @@ public class SupplierServiceImpl implements SupplierService{
                     newTier.addAll(supplier.getTier());
                     supplier.setTier(newTier);
 
-                    supplier.setId(ExsitingSupplier.getId());
+                    supplier.setId(exsitingSupplier.getId());
                     supplierRepository.save(supplier);
                     return true;
                 }
@@ -97,7 +96,7 @@ public class SupplierServiceImpl implements SupplierService{
                 newTier.addAll(supplier.getTier());
                 supplier.setTier(newTier);
 
-                supplier.setId(ExsitingSupplier.getId());
+                supplier.setId(exsitingSupplier.getId());
                 supplierRepository.save(supplier);
                 return true;
             }

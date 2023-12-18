@@ -29,11 +29,17 @@ public class SupplierController {
     private SupplierRepository supplierRepository;
     @PostMapping("/suppliers")
     public String saveSupplier(@RequestBody Supplier supplier) throws supplierNotFoundError {
-         if(supplierService.saveSupplier(supplier)){
-            return "Supplier saved successfully";
-         }
-         return "Supplier already exist";
+
+        try {
+            if(supplierService.saveSupplier(supplier))
+                return "Supplier saved successfully";
+        }
         
+        catch (Exception e) {
+            return "Caught error : " + e.getMessage();
+        }
+        
+        return "Supplier already exists";
     }
 
     @GetMapping("/suppliers")
