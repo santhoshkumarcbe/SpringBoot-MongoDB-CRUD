@@ -32,6 +32,7 @@ public class SupplierController {
     private SupplierService supplierService;
 
     @PostMapping("/suppliers")
+
     public ResponseEntity<Supplier> saveSupplier(@RequestBody Supplier supplier) {
         try {
             if (supplierService.saveSupplier(supplier)) {
@@ -43,6 +44,7 @@ public class SupplierController {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+
     }
     
 

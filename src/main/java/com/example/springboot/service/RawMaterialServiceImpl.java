@@ -20,11 +20,11 @@ public class RawMaterialServiceImpl implements RawMaterialService{
     dao daoInterface;
     @Override
     public boolean saveRm(RawMaterial rawMaterial) {
-       if (daoInterface.rawMaterialIdExsist(rawMaterial.getRawMaterialId())) {
-        return false;
-       }
-       rawMaterialRepository.save(rawMaterial);
-       return true;
+        if (daoInterface.rawMaterialIdExsist(rawMaterial.getRawMaterialId())) {
+            return false;
+        }
+        rawMaterialRepository.save(rawMaterial);
+            return true;
     }
     @Override
     public List<RawMaterial> getRm() {

@@ -11,7 +11,7 @@ import com.example.springboot.errorHandling.supplierNotFoundError;
 import com.example.springboot.repository.SupplierRepository;
 
 @Service
-public class SupplierServiceImpl implements SupplierService{
+public class SupplierServiceImpl implements SupplierService {
 
     @Autowired
     private SupplierRepository supplierRepository;
@@ -21,11 +21,13 @@ public class SupplierServiceImpl implements SupplierService{
     public boolean saveSupplier(Supplier supplier) throws supplierNotFoundError {
         
         int sId=supplier.getSupplierId();
+
         Supplier ExsitingSupplier=supplierRepository.findBySupplierId(sId);
 
         boolean isExsitingSupplierNull=false;
         if (ExsitingSupplier==null) {
             isExsitingSupplierNull=true;
+
         }
 
         
@@ -37,6 +39,7 @@ public class SupplierServiceImpl implements SupplierService{
         
         if (!isExsitingSupplierNull && ExsitingSupplier.getLocation()!=null && ExsitingSupplier.getLocation().containsAll(supplier.getLocation())) {
             slocation=true;
+
         }
     
 
@@ -44,6 +47,7 @@ public class SupplierServiceImpl implements SupplierService{
         if(!isExsitingSupplierNull && ExsitingSupplier.getMaterialType()!=null && ExsitingSupplier.getMaterialType().containsAll(supplier.getMaterialType())){
             smaterialType=true;
         }
+
         if (!isSupplierId && !sname) {
             supplierRepository.save(supplier);
             return true;
@@ -52,6 +56,7 @@ public class SupplierServiceImpl implements SupplierService{
         if ( isSupplierId && sname) {
             if (sname) {
              if (slocation) {
+
                 if (smaterialType) {
                     return false;
                 }
@@ -69,7 +74,7 @@ public class SupplierServiceImpl implements SupplierService{
                     newTier.addAll(supplier.getTier());
                     supplier.setTier(newTier);
 
-                    supplier.setId(ExsitingSupplier.getId());
+                    supplier.setId(exsitingSupplier.getId());
                     supplierRepository.save(supplier);
                     return true;
                 }
@@ -89,7 +94,7 @@ public class SupplierServiceImpl implements SupplierService{
                 newTier.addAll(supplier.getTier());
                 supplier.setTier(newTier);
 
-                supplier.setId(ExsitingSupplier.getId());
+                supplier.setId(exsitingSupplier.getId());
                 supplierRepository.save(supplier);
                 return true;
             }
