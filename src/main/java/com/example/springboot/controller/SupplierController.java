@@ -30,19 +30,25 @@ public class SupplierController {
 
     @Autowired
     private SupplierService supplierService;
-    @Autowired
-    private SupplierRepository supplierRepository;
+
     @PostMapping("/suppliers")
-    public ResponseEntity<Supplier> saveSupplier(@RequestBody Supplier supplier) throws supplierNotFoundError {
-         if(supplierService.saveSupplier(supplier)){
-            return new ResponseEntity<Supplier>(supplier,HttpStatus.OK);
-         }
-         return new ResponseEntity<Supplier>(HttpStatus.NOT_FOUND);
-        
+    public ResponseEntity<Void> saveSupplier(@RequestBody Supplier supplier) {
+        try {
+            if (supplierService.saveSupplier(supplier)) {
+                return new ResponseEntity<>(HttpStatus.CREATED);
+            }
+            return new ResponseEntity<>(HttpStatus.FOUND);
+        } catch (supplierNotFoundError e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
+    
 
     @GetMapping("/suppliers")
     public List<Supplier> getSuppliers() {
+
         return supplierService.getSuppliers();
     }
 
@@ -59,7 +65,7 @@ public class SupplierController {
 
     @GetMapping("/suppliers/{supplierId}")
     public Supplier getSupplierById(@PathVariable("supplierId") int supplierId) throws supplierNotFoundError {
-            return supplierRepository.findBySupplierId(supplierId); 
+            return supplierService.getSupplierById(supplierId); 
     }
 
     @DeleteMapping("/suppliers/{supplierId}")

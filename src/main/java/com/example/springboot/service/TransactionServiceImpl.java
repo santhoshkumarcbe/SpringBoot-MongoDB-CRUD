@@ -1,10 +1,8 @@
 package com.example.springboot.service;
 
 import java.util.ArrayList;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.example.springboot.entity.Transaction;
 import com.example.springboot.repository.SupplierRepository;
 import com.example.springboot.repository.TransactionRepository;
@@ -37,18 +35,21 @@ public class TransactionServiceImpl implements TransactionService {
             Transaction ExsitingTransaction=transactionRepository.findBySupplierId(transaction.getSupplierId());
             int totalPrice=ExsitingTransaction.getTotalPrice();
             totalPrice+=transaction.getPrice();
-            if (totalPrice < transactionLimit) {
+            if (totalPrice <= transactionLimit) {
                 ArrayList<Integer> transactionList=ExsitingTransaction.getTransactionList();
                 transactionList.add(transaction.getPrice());
                 ExsitingTransaction.setTransactionList(transactionList);
                 ExsitingTransaction.setTotalPrice(totalPrice);
                 transactionRepository.save(ExsitingTransaction);
+                transaction=ExsitingTransaction;
                 return true;
             }
             else{
+                System.out.println("Transaction limit exceeds");
                 return false;
             }
         } else {
+            System.out.println("check SupplierId and SupplierName is valid");
             return false;
         }
     }
