@@ -10,6 +10,7 @@ public class MyController{
 	@GetMapping("/")
 	public String HelloWorld() {
 		return "Spring Boot Controller Welcomes you !!!";
+		
 	}
 	}
 	
