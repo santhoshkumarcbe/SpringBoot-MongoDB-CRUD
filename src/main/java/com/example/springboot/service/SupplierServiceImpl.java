@@ -74,7 +74,7 @@ public class SupplierServiceImpl implements SupplierService {
                     newTier.addAll(supplier.getTier());
                     supplier.setTier(newTier);
 
-                    supplier.setId(exsitingSupplier.getId());
+                    supplier.setId(ExsitingSupplier.getId());
                     supplierRepository.save(supplier);
                     return true;
                 }
@@ -94,7 +94,7 @@ public class SupplierServiceImpl implements SupplierService {
                 newTier.addAll(supplier.getTier());
                 supplier.setTier(newTier);
 
-                supplier.setId(exsitingSupplier.getId());
+                supplier.setId(ExsitingSupplier.getId());
                 supplierRepository.save(supplier);
                 return true;
             }
