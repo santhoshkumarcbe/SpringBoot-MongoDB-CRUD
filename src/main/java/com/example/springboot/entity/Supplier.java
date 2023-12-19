@@ -22,5 +22,5 @@ public class Supplier{
 	private ArrayList<String> location;
 	private ArrayList<String> materialType;
 	private ArrayList<Integer> tier;
-
+	private String Imagepath;
 }

@@ -22,6 +22,5 @@ public class Transaction {
     private int price;
     private ArrayList<Integer> transactionList;
     private int totalPrice;
-
     
 }

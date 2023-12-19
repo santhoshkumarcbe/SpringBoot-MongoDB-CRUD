@@ -1,19 +1,23 @@
 package com.example.springboot.controller;
 
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.example.springboot.entity.Supplier;
 import com.example.springboot.errorHandling.supplierNotFoundError;
-import com.example.springboot.repository.SupplierRepository;
 import com.example.springboot.service.SupplierService;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -39,34 +43,23 @@ public class SupplierController {
                 return new ResponseEntity<>(HttpStatus.CREATED);
             }
             return new ResponseEntity<>(HttpStatus.FOUND);
-        } catch (supplierNotFoundError e) {
+        } 
+        catch (supplierNotFoundError e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
+        } 
+        catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
     }
     
-
-    // @PostMapping("/suppliers")
-    // public ResponseEntity<Supplier> saveSupplier(@RequestBody Supplier supplier) throws supplierNotFoundError {
-    //     try{
-    //      if(supplierService.saveSupplier(supplier)){
-    //         return new ResponseEntity<Supplier>(supplier,HttpStatus.OK);
-    //      }
-    //      return new ResponseEntity<Supplier>(supplier,HttpStatus.BAD_REQUEST);
-    //     }
-
-    //     catch(Exception e){
-    //         return new ResponseEntity<Supplier>(supplier,HttpStatus.BAD_REQUEST);
-    //     }
-    // }
-    
-
     @GetMapping("/suppliers")
     public List<Supplier> getSuppliers() {
-
-        return supplierService.getSuppliers();
+        try {
+            return supplierService.getSuppliers();
+        } catch (Exception e) {
+            return null;
+        }   
     }
 
     // @GetMapping("/suppliers/sort/")
@@ -98,12 +91,33 @@ public class SupplierController {
 
     @PutMapping("suppliers/updateSupplierName")
     public void updateSupplierName(@RequestParam String oldName, @RequestParam String newName) {
-        //TODO: process PUT request
         supplierService.updateSupplierName(oldName,newName);
     }
 
-    
-    
-    
-    
+
+    @Controller public class UploadController {
+    public static Path UPLOAD_DIRECTORY = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", "uploads");
+
+    @GetMapping("/suppliers/{supplierId}/uploadimage")
+    public String displayUploadForm(@PathVariable int supplierId, Model model) {
+        model.addAttribute("supplierId", supplierId);
+        return "index";
+    }
+
+    @PostMapping("/suppliers/{supplierId}/upload")
+public String uploadImage(Model model, @RequestParam("image") MultipartFile file, @RequestParam int supplierId  ) throws IOException {
+    Path fileNameAndPath = Paths.get(UPLOAD_DIRECTORY.toString(), file.getOriginalFilename());
+
+    if (!Files.exists(UPLOAD_DIRECTORY)) {
+        Files.createDirectories(UPLOAD_DIRECTORY);
+    }
+
+    Files.write(fileNameAndPath, file.getBytes());
+    model.addAttribute("msg", "Uploaded images: " + file.getOriginalFilename());
+
+    String imagePath=fileNameAndPath.toString();
+    supplierService.updateSupplierImagePath(imagePath,supplierId);
+    return "index";
+}
+}
 }

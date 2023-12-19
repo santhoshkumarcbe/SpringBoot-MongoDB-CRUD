@@ -19,7 +19,7 @@ public class SupplierServiceImpl implements SupplierService {
     dao daoInterface;
     @Override
     public boolean saveSupplier(Supplier supplier) throws supplierNotFoundError {
-        
+        try{
         int sId=supplier.getSupplierId();
 
         Supplier ExsitingSupplier=supplierRepository.findBySupplierId(sId);
@@ -114,37 +114,77 @@ public class SupplierServiceImpl implements SupplierService {
     }
     
 }
+catch(Exception e){
+    e.printStackTrace();
+    return false;
+}
+
+    }
     
     @Override
     public List<Supplier> getSuppliers() {
-        return supplierRepository.findAll();
+        try {
+            return supplierRepository.findAll();
+        } catch (Exception e) {
+            e.printStackTrace();;
+        }
+        return null;
+        
     }
     @Override
-    public Supplier getSupplierById(Integer supplierId) throws supplierNotFoundError {
-        Supplier supplier= supplierRepository.findBySupplierId(supplierId);
+    public Supplier getSupplierById(Integer supplierId) {
+        try {
+            Supplier supplier= supplierRepository.findBySupplierId(supplierId);
         if (supplier==null) {
             throw new supplierNotFoundError("Supplier not available");
             
         }
         return supplier;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        
         
     }
     @Override
     public void deleteSupplierById(ObjectId objectId) {
-        supplierRepository.deleteById(objectId);
+        try {
+            supplierRepository.deleteById(objectId);
     }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+        
     @Override
     public Supplier updatSupplier(Integer supplierid, Supplier supplier) {
-        System.out.println("Supplier updated");
+        try {
+            System.out.println("Supplier updated");
         return supplierRepository.save(supplier);
-            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }   
         }
     
     
     @Override
     public void updateSupplierName(String oldName, String newName) {
-        daoInterface.updateSupplierName(oldName, newName);
+        try {
+            daoInterface.updateSupplierName(oldName, newName);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         
+        
+    }
+
+    @Override
+    public void updateSupplierImagePath(String imagePath, int supplierId) {
+        Supplier supplier=getSupplierById(supplierId);
+        supplier.setImagepath(imagePath);
+        supplierRepository.save(supplier);
     }
 
     // @Override
