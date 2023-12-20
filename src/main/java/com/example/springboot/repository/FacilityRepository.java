@@ -1,10 +1,11 @@
 package com.example.springboot.repository;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
 import com.example.springboot.entity.Facility;
-
-public interface FacilityRepository extends MongoRepository<Facility,Integer>{
+@Repository
+public interface FacilityRepository extends MongoRepository<Facility,Long>{
 
     
 } 
