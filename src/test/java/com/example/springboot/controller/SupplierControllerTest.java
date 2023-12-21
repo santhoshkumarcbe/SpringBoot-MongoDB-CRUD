@@ -1,10 +1,10 @@
 package com.example.springboot.controller;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.startsWith;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,10 +22,25 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+import com.example.springboot.controller.SupplierController.UploadController;
 import com.example.springboot.entity.Supplier;
 import com.example.springboot.repository.SupplierRepository;
 import com.example.springboot.service.SupplierService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.ui.Model;
+
+import java.io.IOException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
 
 
@@ -216,6 +231,77 @@ public class SupplierControllerTest {
         // Verify that the service method was called with the correct argument
         verify(supplierService, times(1)).deleteSupplierById(supplierId);
     }
+
+
+
+
+@ExtendWith(MockitoExtension.class)
+class UploadControllerTest {
+
+    @InjectMocks
+    private UploadController uploadController;
+
+    @Mock
+    private SupplierService supplierService;
+
+    @Mock
+    private Model model;
+
+    private MockMultipartFile validImageFile;
+    private MockMultipartFile invalidFile;
+
+    @BeforeEach
+    void setUp() {
+        validImageFile = new MockMultipartFile(
+                "image",
+                "test-image.jpg",
+                "image/jpeg",
+                "Test image content".getBytes()
+        );
+
+        invalidFile = new MockMultipartFile(
+                "image",
+                "test.txt",
+                "text/plain",
+                "Invalid file content".getBytes()
+        );
+    }
+
+    @Test
+    void testDisplayUploadForm() {
+        int supplierId = 123;
+
+        String result = uploadController.displayUploadForm(supplierId, model);
+
+        assertEquals("index", result);
+        assertEquals(supplierId, model.getAttribute("supplierId"));
+    }
+
+    @Test
+    void testUploadImageWithValidImage() throws IOException {
+        int supplierId = 456;
+
+        doNothing().when(supplierService).updateSupplierImagePath(anyString(), eq(supplierId));
+
+        String result = uploadController.uploadImage(model, validImageFile, supplierId);
+
+        assertEquals("index", result);
+        verify(model).addAttribute(eq("msg"), startsWith("Uploaded images:"));
+        verify(supplierService).updateSupplierImagePath(anyString(), eq(supplierId));
+    }
+
+    @Test
+    void testUploadImageWithInvalidFile() throws IOException {
+        int supplierId = 789;
+
+        String result = uploadController.uploadImage(model, invalidFile, supplierId);
+
+        assertEquals("index", result);
+        verify(model).addAttribute(eq("msg"), eq("Invalid file. Please upload an image."));
+        verify(supplierService, never()).updateSupplierImagePath(anyString(), anyInt());
+    }
+}
+
 
 }
 
