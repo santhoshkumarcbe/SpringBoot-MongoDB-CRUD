@@ -96,7 +96,7 @@ public class SupplierController {
 
 
     @Controller public class UploadController {
-    public static Path UPLOAD_DIRECTORY = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", "uploads");
+    public final Path UPLOAD_DIRECTORY = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", "uploads");
 
     @GetMapping("/suppliers/{supplierId}/uploadimage")
     public String displayUploadForm(@PathVariable int supplierId, Model model) {
