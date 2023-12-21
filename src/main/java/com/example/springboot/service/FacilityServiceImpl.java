@@ -46,7 +46,7 @@ public class FacilityServiceImpl implements FacilityService {
             repo.deleteById(Id);
             flag=true;
         }
-      return "product with Id: "+Id+" deletection status: "+flag;
+      return "Facility with Id: "+Id+" deletection status: "+flag;
     }
 
     @Override
