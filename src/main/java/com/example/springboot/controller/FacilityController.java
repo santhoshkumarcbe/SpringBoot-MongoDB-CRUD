@@ -54,4 +54,4 @@ public class FacilityController{
         return new ResponseEntity<Facility>(fs.updateFacility(f.getFacilityId(),f),HttpStatus.OK);
     }
     
-}
+ }

@@ -106,10 +106,11 @@ public class SupplierController {
 
     @PostMapping("/suppliers/{supplierId}/upload")
 public String uploadImage(Model model, @RequestParam("image") MultipartFile file, @RequestParam int supplierId  ) throws IOException {
-    Path fileNameAndPath = Paths.get(UPLOAD_DIRECTORY.toString(), file.getOriginalFilename());
-
-    if (!Files.exists(UPLOAD_DIRECTORY)) {
-        Files.createDirectories(UPLOAD_DIRECTORY);
+    if (!file.isEmpty() && file.getContentType().startsWith("image/")) {
+        Path fileNameAndPath = Paths.get(UPLOAD_DIRECTORY.toString(), file.getOriginalFilename());
+        
+        if (!Files.exists(UPLOAD_DIRECTORY)) {
+            Files.createDirectories(UPLOAD_DIRECTORY);
     }
 
     Files.write(fileNameAndPath, file.getBytes());
@@ -117,6 +118,11 @@ public String uploadImage(Model model, @RequestParam("image") MultipartFile file
 
     String imagePath=fileNameAndPath.toString();
     supplierService.updateSupplierImagePath(imagePath,supplierId);
+    }
+    else{
+        model.addAttribute("msg", "Invalid file. Please upload an image.");
+    }
+    
     return "index";
 }
 }
