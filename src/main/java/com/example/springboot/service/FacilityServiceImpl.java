@@ -1,11 +1,16 @@
 package com.example.springboot.service;
 
 
+import java.io.File;
 import java.util.List;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.example.springboot.entity.Facility;
 import com.example.springboot.repository.FacilityRepository;
 
@@ -16,7 +21,8 @@ import com.example.springboot.repository.FacilityRepository;
 
 @Service
 public class FacilityServiceImpl implements FacilityService {
-
+  private String imageFolder="C:\\Users\\ARULMOZHI K\\OneDrive\\Documents\\Intern\\n" + //
+          "ew\\SpringBoot\\SpringBoot-MongoDB-CRUD\\src\\main\\resources\\uploads\\";
     @Autowired
     FacilityRepository repo;
 
@@ -62,5 +68,39 @@ public class FacilityServiceImpl implements FacilityService {
          repo.save(f2);
         }
         return f2;
+    }
+
+    @Override 
+    public String uploadImage(long Id, MultipartFile file)
+    {  try{
+        String imagePath=imageFolder+file.getOriginalFilename();
+        Facility f=repo.findById(Id).get();
+        f.setFacilityImage(imagePath);
+        file.transferTo(new File(imagePath));
+        repo.save(f);
+        return "image uploaded at "+imagePath;
+    }
+    catch(Exception e)
+    {
+        e.printStackTrace();
+        return "image not uploaded";
+    }
+    }
+
+    @Override
+    public byte[] getImage(long Id)
+    {
+        String path=repo.findById(Id).get().getFacilityImage();
+        try{
+            if(path==null)
+            return null;
+            byte[] image=Files.readAllBytes(new File(path).toPath());
+            return image;
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
