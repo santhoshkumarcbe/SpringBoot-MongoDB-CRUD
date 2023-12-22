@@ -19,7 +19,7 @@ public interface SupplierService {
 
     public void updateSupplierName(String oldName, String newName);
 
-    public void updateSupplierImagePath(String imagePath, int supplierId);
+    public void updateSupplierImagePath(String imagePath, int supplierId) throws supplierNotFoundError;
 
     // public Page<Supplier> findAll(PageRequest pageable);
 

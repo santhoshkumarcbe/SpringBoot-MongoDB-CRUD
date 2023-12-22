@@ -105,7 +105,7 @@ public class SupplierController {
     }
 
     @PostMapping("/suppliers/{supplierId}/upload")
-public String uploadImage(Model model, @RequestParam("image") MultipartFile file, @RequestParam int supplierId  ) throws IOException {
+public String uploadImage(Model model, @RequestParam("image") MultipartFile file, @RequestParam int supplierId  ) throws IOException, supplierNotFoundError {
     if (!file.isEmpty() && file.getContentType().startsWith("image/")) {
         Path fileNameAndPath = Paths.get(UPLOAD_DIRECTORY.toString(), file.getOriginalFilename());
         
