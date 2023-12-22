@@ -45,34 +45,57 @@ public class SupplierController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } 
         catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
     }
     
     @GetMapping("/getall")
-    public List<Supplier> getSuppliers() {
+    public ResponseEntity<List<Supplier>> getSuppliers() {
         try {
-            return supplierService.getSuppliers();
+            return new ResponseEntity<List<Supplier>> (supplierService.getSuppliers(),HttpStatus.OK);
         } catch (Exception e) {
-            return null;
+            e.printStackTrace();
+            return new ResponseEntity<List<Supplier>> ( HttpStatus.BAD_REQUEST);
         }   
     }
 
     @GetMapping("/get/{supplierId}")
-    public Supplier getSupplierById(@PathVariable("supplierId") int supplierId) throws supplierNotFoundError {
-            return supplierService.getSupplierById(supplierId); 
+    public ResponseEntity<Supplier> getSupplierById(@PathVariable("supplierId") int supplierId){
+        try{
+            return new ResponseEntity<>(supplierService.getSupplierById(supplierId),HttpStatus.OK);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+             
     }
 
     @DeleteMapping("/delete/{supplierId}")
-    public String deleteSupplierById(@PathVariable("supplierId") ObjectId objectId){
-        supplierService.deleteSupplierById(objectId);
-        return "Supplier deleted successfully !!!";
+    public ResponseEntity<String> deleteSupplierById(@PathVariable("supplierId") ObjectId objectId){
+        try{
+            supplierService.deleteSupplierById(objectId);
+            return new ResponseEntity<>("Supplier deleted successfully !!!",HttpStatus.OK);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<>("Error",HttpStatus.BAD_REQUEST);
+        }
+        
     }
 
     @PutMapping("updateById/{Supplierid}")
-    public Supplier updatSupplier(@PathVariable("Supplierid") Integer supplierid, @RequestBody Supplier supplier) {
-        return supplierService.updatSupplier(supplierid,supplier);
+    public ResponseEntity<Supplier> updatSupplier(@PathVariable("Supplierid") Integer supplierid, @RequestBody Supplier supplier) {
+        try{
+            return new ResponseEntity<>(supplierService.updatSupplier(supplierid,supplier),HttpStatus.OK);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+        
     }
 
     @PutMapping("updateByName/updateSupplierName")

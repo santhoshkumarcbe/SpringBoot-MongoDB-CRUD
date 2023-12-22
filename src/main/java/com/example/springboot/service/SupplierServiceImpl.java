@@ -18,7 +18,7 @@ public class SupplierServiceImpl implements SupplierService {
     @Autowired
     dao daoInterface;
     @Override
-    public boolean saveSupplier(Supplier supplier) throws supplierNotFoundError {
+    public boolean saveSupplier(Supplier supplier){
         try{
         int sId=supplier.getSupplierId();
 
@@ -37,14 +37,14 @@ public class SupplierServiceImpl implements SupplierService {
         System.out.println("SuplierName "+ (sname?"present":"absent"));
         boolean slocation=false;
         
-        if (!isExsitingSupplierNull && ExsitingSupplier.getLocation()!=null && ExsitingSupplier.getLocation().containsAll(supplier.getLocation())) {
+        if (!isExsitingSupplierNull && !ExsitingSupplier.getLocation().isEmpty() && ExsitingSupplier.getLocation().containsAll(supplier.getLocation())) {
             slocation=true;
 
         }
     
 
         boolean smaterialType=false;
-        if(!isExsitingSupplierNull && ExsitingSupplier.getMaterialType()!=null && ExsitingSupplier.getMaterialType().containsAll(supplier.getMaterialType())){
+        if(!isExsitingSupplierNull && !ExsitingSupplier.getMaterialType().isEmpty() && ExsitingSupplier.getMaterialType().containsAll(supplier.getMaterialType())){
             smaterialType=true;
         }
 
@@ -124,11 +124,17 @@ catch(Exception e){
     @Override
     public List<Supplier> getSuppliers() {
         try {
-            return supplierRepository.findAll();
+            List<Supplier> suppliers=supplierRepository.findAll();
+            if (suppliers.isEmpty()) {
+                throw new supplierNotFoundError();
+            }
+            else 
+            return suppliers;
         } catch (Exception e) {
-            e.printStackTrace();;
+            e.printStackTrace();
+            return null;
         }
-        return null;
+        
         
     }
     @Override
