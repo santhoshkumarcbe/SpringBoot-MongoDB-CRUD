@@ -15,4 +15,5 @@ public class Facility {
      long facilityId;
      String facilityName;
      int supplierId;
+     String facilityImage;
 }
