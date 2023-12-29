@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -18,9 +19,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import com.example.springboot.entity.Supplier;
 import com.example.springboot.repository.SupplierRepository;
+
 
 @ExtendWith(MockitoExtension.class)
 public class SupplierServiceTest {
@@ -200,7 +201,23 @@ public class SupplierServiceTest {
     verify(supplierRepository, times(1)).deleteById(objectId);
     }
 
+    @Test
+    void testUpdateSupplierImagePath() {
+        // Mocking
+    Supplier mockSupplier = mock(Supplier.class);
+    int supplierId = 149;
+    String imagePath = "/path/to/image.jpg";
 
+    // Mocking the behavior of your repository
+    Mockito.when(supplierRepository.findBySupplierId(supplierId)).thenReturn(mockSupplier);
 
+    // Calling the method to be tested
+    supplierService.updateSupplierImagePath(imagePath, supplierId);
 
+    // Verifying
+    verify(supplierRepository, times(1)).findBySupplierId(supplierId);
+    verify(mockSupplier, times(1)).setImagepath(imagePath);
+    verify(supplierRepository, times(1)).save(mockSupplier);
+    }
 }
+

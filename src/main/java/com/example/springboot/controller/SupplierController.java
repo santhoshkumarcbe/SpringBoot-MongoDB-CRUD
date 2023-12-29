@@ -2,7 +2,6 @@ package com.example.springboot.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.example.springboot.entity.Supplier;
 import com.example.springboot.errorHandling.supplierNotFoundError;
 import com.example.springboot.service.SupplierService;
@@ -11,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,17 +23,16 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
-
-
-
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @RestController
+@RequestMapping("/suppliers")
 public class SupplierController {
 
     @Autowired
     private SupplierService supplierService;
 
-    @PostMapping("/suppliers")
+    @PostMapping("/add")
 
     public ResponseEntity<Supplier> saveSupplier(@RequestBody Supplier supplier) {
         try {
@@ -48,48 +45,60 @@ public class SupplierController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } 
         catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
     }
     
-    @GetMapping("/suppliers")
-    public List<Supplier> getSuppliers() {
+    @GetMapping("/getall")
+    public ResponseEntity<List<Supplier>> getSuppliers() {
         try {
-            return supplierService.getSuppliers();
+            return new ResponseEntity<List<Supplier>> (supplierService.getSuppliers(),HttpStatus.OK);
         } catch (Exception e) {
-            return null;
+            e.printStackTrace();
+            return new ResponseEntity<List<Supplier>> ( HttpStatus.BAD_REQUEST);
         }   
     }
 
-    // @GetMapping("/suppliers/sort/")
-    // public List<Supplier> getSortSuppliers(
-    //     @RequestParam(defaultValue = "0") int page,
-    //         @RequestParam(defaultValue = "10") int size,
-    //         @RequestParam(defaultValue = "id") String sortBy
-    // ) {
-    //     PageRequest pageable=PageRequest.of(page, size,Sort.by(sortBy));
-    //     return supplierService.findAll(pageable);
-    // }
-
-
-    @GetMapping("/suppliers/{supplierId}")
-    public Supplier getSupplierById(@PathVariable("supplierId") int supplierId) throws supplierNotFoundError {
-            return supplierService.getSupplierById(supplierId); 
+    @GetMapping("/get/{supplierId}")
+    public ResponseEntity<Supplier> getSupplierById(@PathVariable("supplierId") int supplierId){
+        try{
+            return new ResponseEntity<>(supplierService.getSupplierById(supplierId),HttpStatus.OK);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+             
     }
 
-    @DeleteMapping("/suppliers/{supplierId}")
-    public String deleteSupplierById(@PathVariable("supplierId") ObjectId objectId){
-        supplierService.deleteSupplierById(objectId);
-        return "Supplier deleted successfully !!!";
+    @DeleteMapping("/delete/{supplierId}")
+    public ResponseEntity<String> deleteSupplierById(@PathVariable("supplierId") ObjectId objectId){
+        try{
+            supplierService.deleteSupplierById(objectId);
+            return new ResponseEntity<>("Supplier deleted successfully !!!",HttpStatus.OK);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<>("Error",HttpStatus.BAD_REQUEST);
+        }
+        
     }
 
-    @PutMapping("suppliers/{Supplierid}")
-    public Supplier updatSupplier(@PathVariable("Supplierid") Integer supplierid, @RequestBody Supplier supplier) {
-        return supplierService.updatSupplier(supplierid,supplier);
+    @PutMapping("updateById/{Supplierid}")
+    public ResponseEntity<Supplier> updatSupplier(@PathVariable("Supplierid") Integer supplierid, @RequestBody Supplier supplier) {
+        try{
+            return new ResponseEntity<>(supplierService.updatSupplier(supplierid,supplier),HttpStatus.OK);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+        
     }
 
-    @PutMapping("suppliers/updateSupplierName")
+    @PutMapping("updateByName/updateSupplierName")
     public void updateSupplierName(@RequestParam String oldName, @RequestParam String newName) {
         supplierService.updateSupplierName(oldName,newName);
     }
@@ -98,7 +107,7 @@ public class SupplierController {
     @Controller public class UploadController {
     public final Path UPLOAD_DIRECTORY = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", "uploads");
 
-    @GetMapping("/suppliers/{supplierId}/uploadimage")
+    @GetMapping("/{supplierId}/uploadimage")
     public String displayUploadForm(@PathVariable int supplierId, Model model) {
         model.addAttribute("supplierId", supplierId);
         return "index";
@@ -108,7 +117,7 @@ public class SupplierController {
 public String uploadImage(Model model, @RequestParam("image") MultipartFile file, @RequestParam int supplierId  ) throws IOException, supplierNotFoundError {
     if (!file.isEmpty() && file.getContentType().startsWith("image/")) {
         Path fileNameAndPath = Paths.get(UPLOAD_DIRECTORY.toString(), file.getOriginalFilename());
-        
+
         if (!Files.exists(UPLOAD_DIRECTORY)) {
             Files.createDirectories(UPLOAD_DIRECTORY);
     }
@@ -126,4 +135,15 @@ public String uploadImage(Model model, @RequestParam("image") MultipartFile file
     return "index";
 }
 }
+
+// @GetMapping("/suppliers/sort/")
+    // public List<Supplier> getSortSuppliers(
+    //     @RequestParam(defaultValue = "0") int page,
+    //         @RequestParam(defaultValue = "10") int size,
+    //         @RequestParam(defaultValue = "id") String sortBy
+    // ) {
+    //     PageRequest pageable=PageRequest.of(page, size,Sort.by(sortBy));
+    //     return supplierService.findAll(pageable);
+    // }
+    
 }
