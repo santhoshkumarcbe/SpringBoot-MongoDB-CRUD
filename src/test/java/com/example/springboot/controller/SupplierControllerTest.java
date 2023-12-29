@@ -25,6 +25,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.example.springboot.controller.SupplierController.UploadController;
 import com.example.springboot.entity.Supplier;
+import com.example.springboot.errorHandling.supplierNotFoundError;
 import com.example.springboot.repository.SupplierRepository;
 import com.example.springboot.service.SupplierService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -278,7 +279,7 @@ class UploadControllerTest {
     }
 
     @Test
-    void testUploadImageWithValidImage() throws IOException {
+    void testUploadImageWithValidImage() throws IOException, supplierNotFoundError {
         int supplierId = 456;
 
         doNothing().when(supplierService).updateSupplierImagePath(anyString(), eq(supplierId));
@@ -291,7 +292,7 @@ class UploadControllerTest {
     }
 
     @Test
-    void testUploadImageWithInvalidFile() throws IOException {
+    void testUploadImageWithInvalidFile() throws IOException, supplierNotFoundError {
         int supplierId = 789;
 
         String result = uploadController.uploadImage(model, invalidFile, supplierId);

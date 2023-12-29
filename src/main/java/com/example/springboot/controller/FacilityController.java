@@ -1,5 +1,5 @@
 package com.example.springboot.controller;
-
+import com.example.springboot.errorHandling.*;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,9 +29,17 @@ public class FacilityController{
     FacilityService fs;
 
     @PostMapping("/add")
-    public ResponseEntity<String> createproduct(@RequestBody Facility f)
-    {
-        return new ResponseEntity<String>(fs.saveFacility(f),HttpStatus.OK);
+    public ResponseEntity<Facility> createproduct(@RequestBody Facility f)
+    {    try{
+        if(fs.saveFacility(f))
+        return new ResponseEntity<>(HttpStatus.CREATED);
+        else
+        throw new facilityFoundError();
+        }
+        catch(facilityFoundError e){
+            return new ResponseEntity<>(HttpStatus.ALREADY_REPORTED);
+        }
+   //  
     }
 
     @GetMapping("/getall")
@@ -42,33 +50,72 @@ public class FacilityController{
 
     @GetMapping("/getId/{id}")
     public ResponseEntity<Facility> readProductById(@PathVariable long id)
-    {
-        return new ResponseEntity<Facility>(fs.getFacilityById(id),HttpStatus.OK);
+    {   try{
+        Facility f=fs.getFacilityById(id);
+        if(f!=null)
+        return new ResponseEntity<Facility>(f,HttpStatus.OK);
+        else
+          return new ResponseEntity<Facility>(f,HttpStatus.NOT_FOUND);
+         }
+         catch(Exception e){
+          return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+         }
     }
 
-    @DeleteMapping("/deleteId")
-    public ResponseEntity<String> deleteProductById(@RequestBody long id)
-    {
-        return new ResponseEntity<String>(fs.deleteFacilityById(id),HttpStatus.OK);
+    @DeleteMapping("/deleteId/{id}")
+    public ResponseEntity<String> deleteFacilityById(@PathVariable long id)
+    {  
+         try{
+         if(fs.deleteFacilityById(id))
+        return new ResponseEntity<String>("Id: "+id+" Facility Deleted.",HttpStatus.OK);
+        else
+          return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+         }
+         catch(Exception e){
+          return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+         }
     }
 
     @PutMapping("/update")
     public ResponseEntity<Facility> updateProductById(@RequestBody Facility f)
-    {
-        return new ResponseEntity<Facility>(fs.updateFacility(f.getFacilityId(),f),HttpStatus.OK);
+    {   try{ Facility updateFacility=fs.updateFacility(f.getFacilityId(),f);
+             if(updateFacility!=null)
+            return new ResponseEntity<Facility>(updateFacility,HttpStatus.OK);
+            else
+            return new ResponseEntity<Facility>(HttpStatus.NOT_FOUND);
+           }
+           catch(Exception e)
+           {
+           return new ResponseEntity<Facility>(HttpStatus.BAD_REQUEST);
+           }
     }
     
     @PutMapping("/uploadImage/{Id}")
     public ResponseEntity<String> updateImage(@PathVariable long Id,@RequestBody MultipartFile file)
-    {
-        return new ResponseEntity<String>(fs.uploadImage(Id,file),HttpStatus.OK);
+    {try{
+        boolean imageStatus=fs.uploadImage(Id,file);
+        if(imageStatus)
+        return new ResponseEntity<String>("Image Uploaded.",HttpStatus.OK);
+        else
+         return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
     }
+    catch(Exception e)
+    {
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+}
 
     @GetMapping("getImage/{Id}")
     public ResponseEntity<?> getImage(@PathVariable long Id)
     {
+        try{
         return ResponseEntity.status(HttpStatus.OK)
         .contentType(MediaType.valueOf("image/jpeg"))
         .body(fs.getImage(Id));
+        }
+        catch(Exception e)
+        {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
  }

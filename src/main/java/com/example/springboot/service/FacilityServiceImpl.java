@@ -3,6 +3,7 @@ package com.example.springboot.service;
 
 import java.io.File;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Optional;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.springboot.entity.Facility;
+import com.example.springboot.errorHandling.facilityNotFoundError;
 import com.example.springboot.repository.FacilityRepository;
 
 // import org.springframework.beans.factory.annotation.Autowired;
@@ -27,9 +29,13 @@ public class FacilityServiceImpl implements FacilityService {
     FacilityRepository repo;
 
     @Override
-     public String saveFacility(Facility f)
-     {  repo.save(f);
-        return "Facility id:"+f.getFacilityId()+" is saved";
+     public Boolean saveFacility(Facility f)
+     {  long Id=f.getFacilityId();
+        if(repo.findById(Id)==null)
+         {repo.save(f);
+        return true;
+         }
+         return false;
      }
 
      @Override
@@ -40,24 +46,37 @@ public class FacilityServiceImpl implements FacilityService {
 
     @Override
     public Facility getFacilityById(Long Id)
-    {
-     return repo.findById(Id).get();
+    { 
+       try{ 
+        if(repo.existsById(Id))
+        return repo.findById(Id).get();
+      throw new facilityNotFoundError();
+        }
+        catch(Exception e)
+        { return null;
+        }
     }
 
     @Override
-    public String deleteFacilityById(Long Id)
-    {  boolean flag=false;
-        if(repo.existsById(Id))
+    public Boolean deleteFacilityById(Long Id)
+    {  boolean idExists=false;
+        try{
+            if(repo.existsById(Id))
         {
             repo.deleteById(Id);
-            flag=true;
+            idExists=true;
         }
-      return "Facility with Id: "+Id+" deletection status: "+flag;
+      return idExists;
+        }
+        catch(Exception e)
+        {
+            throw new NoSuchElementException();
+        }
     }
 
     @Override
-    public Facility updateFacility(Long Id,Facility f)
-    {   
+    public Facility updateFacility(Long Id,Facility f) throws Exception
+    {   try{
         Optional<Facility> f1=repo.findById(Id);
         Facility f2=null;
         if(f1.isPresent()){
@@ -69,21 +88,25 @@ public class FacilityServiceImpl implements FacilityService {
         }
         return f2;
     }
+    catch(Exception e)
+    {
+        throw new Exception();
+    }
+    }
 
     @Override 
-    public String uploadImage(long Id, MultipartFile file)
+    public Boolean uploadImage(long Id, MultipartFile file) throws Exception
     {  try{
         String imagePath=imageFolder+file.getOriginalFilename();
         Facility f=repo.findById(Id).get();
         f.setFacilityImage(imagePath);
         file.transferTo(new File(imagePath));
         repo.save(f);
-        return "image uploaded at "+imagePath;
+        return true;
     }
     catch(Exception e)
     {
-        e.printStackTrace();
-        return "image not uploaded";
+        return false;
     }
     }
 
