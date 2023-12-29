@@ -5,18 +5,20 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 
+import com.example.springboot.service.LoginService;
+
 import jakarta.servlet.http.HttpServletRequest;
 
 public class LoginController {
      @Autowired
-    loginservice loginservice;
+    LoginService loginservice;
     @PutMapping("/{username}/{pwd}") 
     String key(@PathVariable String username,@PathVariable String pwd)
     {
-        return service.generateToken(username,pwd);
+        return loginservice.generateToken(username,pwd);
     }
       @GetMapping("/verify/{name}")
     public String getMethodName(HttpServletRequest request, @PathVariable String name) {
-        return service.validateToken(request.getHeader("Authorization").split(" ",2)[1],name);
+        return loginservice.validateToken(request.getHeader("Authorization").split(" ",2)[1],name);
     }
 }

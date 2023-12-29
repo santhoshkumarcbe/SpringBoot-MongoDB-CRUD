@@ -2,8 +2,12 @@ package com.example.springboot.service;
 
 import org.springframework.stereotype.Service;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+
 @Service
-public class LoginServiceImpl {
+public class LoginServiceImpl implements LoginService{
     public String generateToken(String username,String pwd)
     {
         Claims claims=Jwts.claims().setSubject(username);
