@@ -33,7 +33,6 @@ public class SupplierController {
     private SupplierService supplierService;
 
     @PostMapping("/add")
-
     public ResponseEntity<Supplier> saveSupplier(@RequestBody Supplier supplier) {
         try {
             if (supplierService.saveSupplier(supplier)) {
@@ -48,7 +47,6 @@ public class SupplierController {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-
     }
     
     @GetMapping("/getall")
@@ -82,8 +80,7 @@ public class SupplierController {
         catch(Exception e){
             e.printStackTrace();
             return new ResponseEntity<>("Error",HttpStatus.BAD_REQUEST);
-        }
-        
+        } 
     }
 
     @PutMapping("updateById/{Supplierid}")
@@ -94,8 +91,7 @@ public class SupplierController {
         catch(Exception e){
             e.printStackTrace();
             return null;
-        }
-        
+        } 
     }
 
     @PutMapping("updateByName/updateSupplierName")
@@ -103,18 +99,20 @@ public class SupplierController {
         supplierService.updateSupplierName(oldName,newName);
     }
 
-
     @Controller public class UploadController {
+
     public final Path UPLOAD_DIRECTORY = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", "uploads");
 
-    @GetMapping("/{supplierId}/uploadimage")
+    @GetMapping("suppliers/get/{supplierId}/updateimage")
     public String displayUploadForm(@PathVariable int supplierId, Model model) {
         model.addAttribute("supplierId", supplierId);
         return "index";
     }
 
-    @PostMapping("/{supplierId}/upload")
+    @PostMapping("suppliers/{supplierId}/upload")
 public String uploadImage(Model model, @RequestParam("image") MultipartFile file, @RequestParam int supplierId  ) throws IOException {
+    try{
+
     if (!file.isEmpty() && file.getContentType().startsWith("image/")) {
         Path fileNameAndPath = Paths.get(UPLOAD_DIRECTORY.toString(), file.getOriginalFilename());
 
@@ -131,8 +129,13 @@ public String uploadImage(Model model, @RequestParam("image") MultipartFile file
     else{
         model.addAttribute("msg", "Invalid file. Please upload an image.");
     }
-    
     return "index";
+}
+
+catch(Exception e){
+    e.printStackTrace();
+    return e.getMessage();
+}
 }
 }
 
