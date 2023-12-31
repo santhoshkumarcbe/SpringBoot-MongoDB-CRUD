@@ -122,7 +122,7 @@ catch(Exception e){
     }
     
     @Override
-    public List<Supplier> getSuppliers() {
+    public List<Supplier> getSuppliers() throws supplierNotFoundError{
         try {
             List<Supplier> suppliers=supplierRepository.findAll();
             if (suppliers.isEmpty()) {
@@ -138,7 +138,7 @@ catch(Exception e){
         
     }
     @Override
-    public Supplier getSupplierById(Integer supplierId) {
+    public Supplier getSupplierById(Integer supplierId) throws supplierNotFoundError{
         try {
             Supplier supplier= supplierRepository.findBySupplierId(supplierId);
         if (supplier==null) {
@@ -187,7 +187,7 @@ catch(Exception e){
     }
 
     @Override
-    public void updateSupplierImagePath(String imagePath, int supplierId) {
+    public void updateSupplierImagePath(String imagePath, int supplierId) throws supplierNotFoundError {
         Supplier supplier=getSupplierById(supplierId);
         supplier.setImagepath(imagePath);
         supplierRepository.save(supplier);

@@ -20,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import com.example.springboot.entity.Supplier;
+import com.example.springboot.errorHandling.supplierNotFoundError;
 import com.example.springboot.repository.SupplierRepository;
 
 
@@ -202,7 +203,7 @@ public class SupplierServiceTest {
     }
 
     @Test
-    void testUpdateSupplierImagePath() {
+    void testUpdateSupplierImagePath() throws supplierNotFoundError {
         // Mocking
     Supplier mockSupplier = mock(Supplier.class);
     int supplierId = 149;

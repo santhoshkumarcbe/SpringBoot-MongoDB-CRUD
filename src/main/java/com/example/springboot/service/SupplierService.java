@@ -9,7 +9,7 @@ public interface SupplierService {
 
     public boolean saveSupplier(Supplier supplier) throws supplierNotFoundError;
 
-    public List<Supplier> getSuppliers();
+    public List<Supplier> getSuppliers() throws supplierNotFoundError;
 
     public Supplier getSupplierById(Integer supplierId) throws supplierNotFoundError;
 
