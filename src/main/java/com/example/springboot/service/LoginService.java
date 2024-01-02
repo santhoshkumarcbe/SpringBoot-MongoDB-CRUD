@@ -4,6 +4,8 @@ public interface LoginService {
 
     String generateToken(String username, String pwd);
 
-    String validateToken(String string, String name);
+    boolean validateToken(String string, String name);
+
+    String extractToken(String authorizationHeader);
     
 }

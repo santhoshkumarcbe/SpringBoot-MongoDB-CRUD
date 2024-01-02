@@ -12,14 +12,22 @@ public class LoginServiceImpl implements LoginService{
     {
         Claims claims=Jwts.claims().setSubject(username);
         System.out.println("Claims :"+claims);
-        String token=Jwts.builder().setClaims(claims).signWith(SignatureAlgorithm.HS256,"*U(8hj908ns98daniasudfniawur97q2e7r2934892rnu213rn09217349782190348y12").compact();
+        String token=Jwts.builder().setClaims(claims).
+        signWith(SignatureAlgorithm.HS256,"*U(8hj908ns98daniasudfniawur97q2e7r2934892rnu213rn09217349782190348y12").compact();
         System.out.println("Token: "+token);
         return token;
     }
-    public String validateToken(String token,String name){
+    public boolean validateToken(String token,String name){
         if(token.equals(generateToken(name, ""))){
-            return "Valid";
+            return true;
         }
-        return "Invalid";
+        return false;
+    }
+    @Override
+    public String extractToken(String authorizationHeader) {
+        if (authorizationHeader!=null && authorizationHeader.startsWith("Bearer ")) {
+            return authorizationHeader.substring(7);
+        }
+        return null;
     }
 }
