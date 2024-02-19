@@ -71,17 +71,17 @@ public class SupplierController {
 
     @GetMapping("/get/{supplierId}")
     public ResponseEntity<Supplier> getSupplierById(@PathVariable("supplierId") int supplierId) throws supplierNotFoundError{
-        try{
+        // try{
             Supplier supplier=supplierService.getSupplierById(supplierId);
             if (supplier==null) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
             return new ResponseEntity<>(supplier,HttpStatus.OK);
-        }
-        catch(Exception e){
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        // }
+        // catch(Exception e){
+        //     e.printStackTrace();
+        //     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        // }
              
     }
 

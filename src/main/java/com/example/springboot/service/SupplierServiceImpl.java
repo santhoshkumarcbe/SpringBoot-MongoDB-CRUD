@@ -139,17 +139,13 @@ catch(Exception e){
     }
     @Override
     public Supplier getSupplierById(Integer supplierId) throws supplierNotFoundError{
-        try {
+      
             Supplier supplier= supplierRepository.findBySupplierId(supplierId);
         if (supplier==null) {
             throw new supplierNotFoundError("Supplier not available");
             
         }
         return supplier;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
         
         
     }
